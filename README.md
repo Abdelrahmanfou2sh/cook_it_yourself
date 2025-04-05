@@ -1,16 +1,24 @@
-# cook
+# Cook It Yourself
 
-A new Flutter project.
+تطبيق وصفات طبخ يساعدك على اكتشاف وصفات جديدة وتعلم كيفية تحضيرها بنفسك.
 
-## Getting Started
+## المميزات
 
-This project is a starting point for a Flutter application.
+- 🍳 استعراض مجموعة متنوعة من وصفات الطبخ
+- 🔍 البحث عن وصفات محددة
+- 🌍 تصفية الوصفات حسب نوع المطبخ
+- 💡 اقتراحات ذكية للوصفات بناءً على الوقت من اليوم
+- 🌙 وضع الظلام (Dark Mode)
 
-A few resources to get you started if this is your first Flutter project:
+## التقنيات المستخدمة
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter
+- Bloc / Cubit لإدارة الحالة
+- Infinite Scroll Pagination
+- Shared Preferences
+- Flutter Native Splash
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## التثبيت
+
+1. تأكد من تثبيت Flutter على جهازك
+2. استنسخ هذا المستودع:
