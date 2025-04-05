@@ -13,7 +13,7 @@
 ## التقنيات المستخدمة
 
 - Flutter
-- Bloc / Cubit لإدارة الحالة
+- Cubit
 - Infinite Scroll Pagination
 - Shared Preferences
 - Flutter Native Splash
