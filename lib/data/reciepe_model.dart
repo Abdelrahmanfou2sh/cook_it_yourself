@@ -27,19 +27,21 @@ class Recipe {
     required this.spoonacularScore,
   });
 
-  // في طريقة fromJson
+  // Either use the steps variable or remove it
   factory Recipe.fromJson(Map<String, dynamic> json) {
     // استخراج خطوات التحضير
-    List<String> steps = [];
-    if (json['analyzedInstructions'] != null && json['analyzedInstructions'].isNotEmpty) {
+    List<String> extractedSteps = [];
+    if (json['analyzedInstructions'] != null &&
+        json['analyzedInstructions'].isNotEmpty) {
       final instructions = json['analyzedInstructions'][0];
       if (instructions != null && instructions['steps'] != null) {
-        steps = (instructions['steps'] as List)
-            .map((step) => step['step'].toString())
-            .toList();
+        extractedSteps =
+            (instructions['steps'] as List)
+                .map((step) => step['step'].toString())
+                .toList();
       }
     }
-    
+
     return Recipe(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
@@ -50,10 +52,13 @@ class Recipe {
       cuisines: List<String>.from(json['cuisines'] ?? []),
       dishTypes: List<String>.from(json['dishTypes'] ?? []),
       diets: List<String>.from(json['diets'] ?? []),
-      extendedIngredients: (json['extendedIngredients'] as List<dynamic>?)
-          ?.map((ingredient) => ingredient['original'].toString())
-          .toList() ?? [],
-      instructions: json['instructions'] ?? '',
+      extendedIngredients:
+          (json['extendedIngredients'] as List<dynamic>?)
+              ?.map((ingredient) => ingredient['original'].toString())
+              .toList() ??
+          [],
+      // Use the extracted steps if instructions is empty
+      instructions: json['instructions'] ?? (extractedSteps.isNotEmpty ? extractedSteps.join('. ') : ''),
       spoonacularScore: (json['spoonacularScore'] ?? 0.0).toDouble(),
     );
   }
@@ -63,8 +68,6 @@ class Recipe {
   String get cuisine => cuisines.isNotEmpty ? cuisines.first : 'عام';
   String get time => '$readyInMinutes دقيقة';
   List<String> get ingredients => extendedIngredients;
-  List<String> get steps => instructions
-      .split('.')
-      .where((step) => step.trim().isNotEmpty)
-      .toList();
+  List<String> get steps =>
+      instructions.split('.').where((step) => step.trim().isNotEmpty).toList();
 }

@@ -17,27 +17,26 @@ class RecipesScreen extends StatefulWidget {
 class _RecipesScreenState extends State<RecipesScreen> {
   static const _pageSize = 20;
 
-  // Replace the PagingController initialization
+  // PagingController initialization
   final PagingController<int, Recipe> _pagingController =
-      PagingController<int, Recipe>(
-        // Use firstPageKey parameter
-        firstPageKey: 0,
-      );
+      PagingController<int, Recipe>(firstPageKey: 0);
 
   @override
   void initState() {
     super.initState();
-
-    // Replace the listener setup
+    
+    // Add page request listener
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
-
+    
     // Initial load from cubit
     context.read<RecipesCubit>().loadRecipes();
+    // إضافة تحميل الاقتراحات
+    // context.read<RecipesCubit>().loadSuggestedRecipes();
   }
 
-  // Update the _fetchPage method
+  // Fetch page method
   Future<void> _fetchPage(int pageKey) async {
     try {
       final newItems = await context.read<RecipesCubit>().fetchRecipesPage(
@@ -64,6 +63,74 @@ class _RecipesScreenState extends State<RecipesScreen> {
     super.dispose();
   }
 
+  // أضف هذه الدالة داخل _RecipesScreenState
+  void _showIngredientSearchDialog() {
+    final TextEditingController controller = TextEditingController();
+    final List<String> ingredients = [];
+  
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('البحث بالمكونات'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    hintText: 'أدخل المكون ثم اضغط إضافة',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    if (controller.text.isNotEmpty) {
+                      setState(() {
+                        ingredients.add(controller.text);
+                        controller.clear();
+                      });
+                    }
+                  },
+                  child: const Text('إضافة مكون'),
+                ),
+                const SizedBox(height: 16),
+                const Text('المكونات المضافة:'),
+                Wrap(
+                  spacing: 8,
+                  children: ingredients.map((ingredient) => Chip(
+                    label: Text(ingredient),
+                    onDeleted: () {
+                      setState(() {
+                        ingredients.remove(ingredient);
+                      });
+                    },
+                  )).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('إلغاء'),
+              ),
+              TextButton(
+                onPressed: ingredients.isEmpty ? null : () {
+                  context.read<RecipesCubit>().searchByIngredients(ingredients);
+                  Navigator.pop(context);
+                },
+                child: const Text('بحث'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // في بناء الواجهة، أضف زر البحث بالمكونات بجوار حقل البحث
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -91,15 +158,18 @@ class _RecipesScreenState extends State<RecipesScreen> {
           }
         },
         builder: (context, state) {
-          // عرض مؤشر التحميل فقط عند التحميل الأولي وليس عند تحديث الفلاتر
-          if (state is RecipesLoading && !(state is RecipesLoaded)) {
+          // عرض مؤشر التحميل فقط عند التحميل الأولي وليس عند تحديث الفلاترز
+          // Replace !(state is RecipesLoaded) with state is! RecipesLoaded
+          if (state is RecipesLoading && state is! RecipesLoaded) {
             return const Center(child: CircularProgressIndicator());
           }
-
-          if (state is RecipesError && !(state is RecipesLoaded)) {
+          
+          if (state is RecipesError && state is! RecipesLoaded) {
             return Center(child: Text('خطأ: ${state.message}'));
           }
-
+          
+          // Replace withOpacity with withValues
+          // color.withValues(red, green, blue, opacity)
           // استخدام الحالة الحالية حتى لو كانت تحت التحميل
           if (state is RecipesLoaded) {
             return Column(
@@ -107,19 +177,31 @@ class _RecipesScreenState extends State<RecipesScreen> {
                 // Search field
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'ابحث عن وصفة...',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (query) {
-                      if (query.isNotEmpty) {
-                        context.read<RecipesCubit>().searchRecipes(query);
-                      } else {
-                        context.read<RecipesCubit>().clearFilters();
-                      }
-                    },
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'ابحث عن وصفة...',
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (query) {
+                            if (query.isNotEmpty) {
+                              context.read<RecipesCubit>().searchRecipes(query);
+                            } else {
+                              context.read<RecipesCubit>().clearFilters();
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.food_bank),
+                        tooltip: 'البحث بالمكونات',
+                        onPressed: _showIngredientSearchDialog,
+                      ),
+                    ],
                   ),
                 ),
 

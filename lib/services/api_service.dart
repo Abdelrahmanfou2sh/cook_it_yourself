@@ -1,3 +1,4 @@
+import 'package:cook/data/reciepe_model.dart';
 import 'package:dio/dio.dart';
 
 class ApiService {
@@ -12,15 +13,14 @@ class ApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          print('Sending request: ${options.uri}');
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          print('Received response: ${response.statusCode}');
+          // _logger.d('Received response: ${response.statusCode}');
           return handler.next(response);
         },
         onError: (error, handler) {
-          print('Error: ${error.message}');
+          // _logger.e('Error: ${error.message}');
           return handler.next(error);
         },
       ),
@@ -42,17 +42,17 @@ class ApiService {
         'addRecipeInformation': true,
         'fillIngredients': true,
       };
-      
+
       // Add parameters only if they're not empty
       if (query.isNotEmpty) queryParams['query'] = query;
       if (cuisine.isNotEmpty) queryParams['cuisine'] = cuisine;
       if (diet.isNotEmpty) queryParams['diet'] = diet;
-      
+
       final response = await _dio.get(
         '/complexSearch',
         queryParameters: queryParams,
       );
-      
+
       return response.data['results'];
     } catch (e) {
       print('Error in searchRecipes: $e');
@@ -104,6 +104,32 @@ class ApiService {
         return Exception('Request cancelled');
       default:
         return Exception('Network error: ${e.message}');
+    }
+  }
+
+  Future<List<Recipe>> searchRecipesByIngredients(
+    List<String> ingredients,
+  ) async {
+    try {
+      final query = ingredients.join(',');
+      final response = await _dio.get(
+        '/findByIngredients',
+        queryParameters: {
+          'ingredients': query,
+          'number': 20,
+          'apiKey': apiKey,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        // Convert the dynamic data to Recipe objects
+        return data.map((json) => Recipe.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load recipes by ingredients');
+      }
+    } catch (e) {
+      throw Exception('Error searching recipes by ingredients: $e');
     }
   }
 }

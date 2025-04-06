@@ -9,7 +9,8 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    // Either use the isDarkMode variable or remove it
+    // final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       onTap: () {

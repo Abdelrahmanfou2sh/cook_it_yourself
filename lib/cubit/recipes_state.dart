@@ -40,13 +40,16 @@ class RecipesLoading extends RecipesState {
   }
 }
 
+// Add suggestedRecipes to RecipesLoaded class
+// Add const to constructors
 class RecipesLoaded extends RecipesState {
   final List<Recipe> recipes;
   final List<String> cuisineTypes;
   final List<String> dietTypes;
   final String? selectedCuisine;
-  final String? selectedDiet; // إضافة الحمية المحددة
+  final String? selectedDiet;
   final String? searchQuery;
+  final List<Recipe>? suggestedRecipes; // Add this parameter
 
   const RecipesLoaded({
     required this.recipes,
@@ -55,6 +58,7 @@ class RecipesLoaded extends RecipesState {
     this.selectedCuisine,
     this.selectedDiet,
     this.searchQuery,
+    this.suggestedRecipes, // Add this parameter
   });
 }
 
