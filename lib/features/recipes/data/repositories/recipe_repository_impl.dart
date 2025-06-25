@@ -19,6 +19,13 @@ class RecipeRepositoryImpl implements IRecipeRepository {
   @override
   Future<Either<Failure, List<RecipeEntity>>> getRecipes() async {
     try {
+      // محاولة جلب البيانات المحلية أولاً
+      final localRecipes = await localDataSource.getCachedRecipes();
+      if (localRecipes.isNotEmpty) {
+        return Right(localRecipes);
+      }
+
+      // إذا لم توجد بيانات محلية، جلب من السيرفر
       final remoteRecipes = await remoteDataSource.getRecipes();
       await localDataSource.cacheRecipes(remoteRecipes);
       return Right(remoteRecipes);

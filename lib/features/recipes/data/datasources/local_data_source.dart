@@ -20,15 +20,20 @@ class RecipeLocalDataSource implements IRecipeLocalDataSource {
   RecipeLocalDataSource({required this.sharedPreferences});
 
   @override
-  Future<List<RecipeModel>> getCachedRecipes() async {
-    final jsonString = sharedPreferences.getString(CACHED_RECIPES_KEY);
-    if (jsonString != null) {
+Future<List<RecipeModel>> getCachedRecipes() async {
+  final jsonString = sharedPreferences.getString(CACHED_RECIPES_KEY);
+  if (jsonString != null) {
+    try {
       final List<dynamic> jsonList = json.decode(jsonString);
       return jsonList.map((json) => RecipeModel.fromJson(json)).toList();
-    } else {
-      throw CacheException();
+    } catch (e) {
+      // في حالة فشل تحليل JSON
+      await sharedPreferences.remove(CACHED_RECIPES_KEY);
+      return [];
     }
   }
+  return [];
+}
 
   @override
   Future<void> cacheRecipes(List<RecipeModel> recipes) async {

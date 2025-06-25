@@ -9,26 +9,26 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.4
   cupertino_icons: ^1.0.8
-  flutter_bloc: ^9.1.0
+  flutter_bloc: ^9.1.1
   equatable: ^2.0.7
   dio: ^5.8.0+1
   shared_preferences: ^2.5.3
-  infinite_scroll_pagination: ^4.0.0
-  animations: ^2.0.8
-  uuid: ^4.3.3
-  intl: ^0.19.0
+  infinite_scroll_pagination: ^5.1.0
+  animations: ^2.0.11
+  uuid: ^4.5.1
+  intl: ^0.20.2
   dartz: ^0.10.1
-  get_it: ^7.6.4
-  provider: ^6.1.1
-  google_fonts: ^6.1.0
+  get_it: ^8.0.3
+  provider: ^6.1.5
+  google_fonts: ^6.2.1
   
   # Firebase
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.13.6
-  firebase_storage: ^11.5.6
+  firebase_core: ^3.14.0
+  firebase_auth: ^5.6.0
+  cloud_firestore: ^5.6.9
+  firebase_storage: ^12.4.7
 
 dev_dependencies:
   flutter_test:
@@ -39,12 +39,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/data/recipes.json
     - assets/cooking_logo.jpg
 
 # هذا القسم يجب أن يكون خارج قسم flutter تمامًا
 flutter_native_splash:
-  color: "#FF9800"
+  color: "#FFFFFF"
   image: assets/cooking_logo.jpg
   color_dark: "#212121"
   image_dark: assets/cooking_logo.jpg
