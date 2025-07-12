@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/error/exceptions.dart';
 import '../models/recipe_model.dart';
 
 abstract class IRecipeLocalDataSource {
@@ -20,25 +19,29 @@ class RecipeLocalDataSource implements IRecipeLocalDataSource {
   RecipeLocalDataSource({required this.sharedPreferences});
 
   @override
-Future<List<RecipeModel>> getCachedRecipes() async {
-  final jsonString = sharedPreferences.getString(CACHED_RECIPES_KEY);
-  if (jsonString != null) {
-    try {
-      final List<dynamic> jsonList = json.decode(jsonString);
-      return jsonList.map((json) => RecipeModel.fromJson(json)).toList();
-    } catch (e) {
-      // في حالة فشل تحليل JSON
-      await sharedPreferences.remove(CACHED_RECIPES_KEY);
-      return [];
+  Future<List<RecipeModel>> getCachedRecipes() async {
+    final jsonString = sharedPreferences.getString(CACHED_RECIPES_KEY);
+    if (jsonString != null) {
+      try {
+        final List<dynamic> jsonList = json.decode(jsonString);
+        return jsonList.map((json) => RecipeModel.fromJson(json)).toList();
+      } catch (e) {
+        // في حالة فشل تحليل JSON
+        await sharedPreferences.remove(CACHED_RECIPES_KEY);
+        return [];
+      }
     }
+    return [];
   }
-  return [];
-}
 
   @override
   Future<void> cacheRecipes(List<RecipeModel> recipes) async {
-    final List<Map<String, dynamic>> jsonList = recipes.map((recipe) => recipe.toJson()).toList();
-    await sharedPreferences.setString(CACHED_RECIPES_KEY, json.encode(jsonList));
+    final List<Map<String, dynamic>> jsonList =
+        recipes.map((recipe) => recipe.toJson()).toList();
+    await sharedPreferences.setString(
+      CACHED_RECIPES_KEY,
+      json.encode(jsonList),
+    );
   }
 
   @override

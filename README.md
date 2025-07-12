@@ -36,6 +36,7 @@
 - Firebase Authentication
 - Cloud Firestore
 - Firebase Storage
+- Spoonacular API (لبيانات الوصفات)
 
 ### 🏗️ الهيكل التنظيمي
 - Clean Architecture
@@ -51,6 +52,7 @@
    - Firebase Authentication
    - Cloud Firestore
    - Firebase Storage
+3. احصل على مفتاح API من [Spoonacular](https://spoonacular.com/food-api)
 
 ### 🚀 خطوات التثبيت
 1. استنسخ هذا المستودع:
@@ -69,7 +71,12 @@
    - أضف ملف `GoogleService-Info.plist` إلى مجلد `ios/Runner`
    - قم بتحديث `firebase_options.dart` بمعلومات مشروعك
 
-4. قم بتشغيل التطبيق:
-   ```bash
-   flutter run
+4. قم بإنشاء ملف `.env` في المجلد الرئيسي وأضف مفتاح Spoonacular API:
    ```
+   SPOONACULAR_API_KEY=your_api_key_here
+   ```
+
+5. قم بتشغيل التطبيق:
+    ```bash
+    flutter run
+    ```

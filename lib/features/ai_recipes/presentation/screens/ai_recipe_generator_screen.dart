@@ -49,7 +49,24 @@ class _AiRecipeGeneratorScreenState extends State<AiRecipeGeneratorScreen> {
         listener: (context, state) {
           if (state is AiRecipesError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.failure.message)),
+              SnackBar(
+                content: Text(state.failure.message),
+                behavior: SnackBarBehavior.floating,
+                margin: const EdgeInsets.all(16),
+                duration: const Duration(seconds: 5),
+                action: state.failure.message.contains('API') ?
+                  SnackBarAction(
+                    label: 'الإعدادات',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsScreen(),
+                        ),
+                      );
+                    },
+                  ) : null,
+              ),
             );
           }
         },
@@ -94,27 +111,122 @@ class _AiRecipeGeneratorScreenState extends State<AiRecipeGeneratorScreen> {
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                TextField(
-                  controller: _promptController,
-                  decoration: const InputDecoration(
-                    labelText: 'وصف الوصفة',
-                    hintText: 'اكتب وصفاً للوصفة التي تريد توليدها',
-                  ),
-                  maxLines: 3,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _promptController,
+                      decoration: const InputDecoration(
+                        labelText: 'وصف الوصفة',
+                        hintText: 'اكتب وصفاً للوصفة التي تريد توليدها',
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'أمثلة للوصف:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: InkWell(
+                        onTap: () {
+                          _promptController.text = 'وصفة كيكة شوكولاتة سهلة وسريعة';
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم نسخ المثال')),
+                          );
+                        },
+                        child: const Text(
+                          '• وصفة كيكة شوكولاتة سهلة وسريعة',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: InkWell(
+                        onTap: () {
+                          _promptController.text = 'طريقة عمل مكرونة بالبشاميل';
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم نسخ المثال')),
+                          );
+                        },
+                        child: const Text(
+                          '• طريقة عمل مكرونة بالبشاميل',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: InkWell(
+                        onTap: () {
+                          _promptController.text = 'وصفة سلطة صيفية منعشة';
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم نسخ المثال')),
+                          );
+                        },
+                        child: const Text(
+                          '• وصفة سلطة صيفية منعشة',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: InkWell(
+                        onTap: () {
+                          _promptController.text = 'طريقة تحضير شوربة خضار صحية';
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم نسخ المثال')),
+                          );
+                        },
+                        child: const Text(
+                          '• طريقة تحضير شوربة خضار صحية',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: state is AiRecipesLoading
                       ? null
                       : () {
-                          if (_promptController.text.isNotEmpty) {
-                            context
-                                .read<AiRecipesCubit>()
-                                .generateRecipe(_promptController.text);
+                          final prompt = _promptController.text.trim();
+                          if (prompt.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('يرجى إدخال وصف للوصفة'),
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.all(16),
+                              ),
+                            );
+                            return;
                           }
+                          if (prompt.length < 3) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('يرجى إدخال وصف أطول للوصفة'),
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.all(16),
+                              ),
+                            );
+                            return;
+                          }
+                          context.read<AiRecipesCubit>().generateRecipe(prompt);
                         },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
                   child: state is AiRecipesLoading
-                      ? const CircularProgressIndicator()
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('توليد وصفة'),
                 ),
                 const SizedBox(height: 16),

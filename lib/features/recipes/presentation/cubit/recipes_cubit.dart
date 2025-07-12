@@ -59,7 +59,15 @@ class RecipesCubit extends Cubit<RecipesState> {
     final result = await toggleFavorite(id);
     result.fold(
       (failure) => emit(RecipesError(failure.toString())),
-      (_) => emit(const RecipeActionSuccess('Recipe favorite status updated')),
+      (_) async {
+        // تحديث حالة المفضلة وإعادة تحميل الوصفات مباشرة
+        if (state is FavoriteRecipes) {
+          await loadFavoriteRecipes();
+        } else {
+          await loadRecipes();
+        }
+        emit(const RecipeActionSuccess('تم تحديث حالة المفضلة'));
+      },
     );
   }
 

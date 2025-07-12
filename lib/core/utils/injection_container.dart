@@ -30,6 +30,18 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/i_auth_repository.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 
+// AI Recipe imports
+import '../../features/ai_recipes/data/datasources/local_data_source.dart';
+import '../../features/ai_recipes/data/datasources/remote_data_source.dart';
+import '../../features/ai_recipes/data/repositories/ai_recipe_repository_impl.dart';
+import '../../features/ai_recipes/domain/repositories/i_ai_recipe_repository.dart';
+import '../../features/ai_recipes/domain/usecases/generate_recipe.dart';
+import '../../features/ai_recipes/domain/usecases/get_remaining_generations.dart';
+import '../../features/ai_recipes/domain/usecases/manage_api_key.dart';
+import '../../features/ai_recipes/presentation/cubit/ai_recipes_cubit.dart';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -80,12 +92,44 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ResetPassword(sl()));
   sl.registerLazySingleton(() => IsSignedIn(sl()));
 
+  // AI Recipe Use cases
+  sl.registerLazySingleton(() => GenerateRecipe(sl()));
+  sl.registerLazySingleton(() => GetRemainingGenerations(sl()));
+  sl.registerLazySingleton(() => ManageApiKey(sl()));
+
   // Repositories
   sl.registerLazySingleton<IRecipeRepository>(
     () => RecipeRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
   sl.registerLazySingleton<IAuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
+  );
+  
+  // AI Recipe Feature
+  sl.registerFactory(
+    () => AiRecipesCubit(
+      generateRecipe: sl(),
+      getRemainingGenerations: sl(),
+      manageApiKey: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<IAiRecipeRepository>(
+    () => AiRecipeRepositoryImpl(
+      sl<AiRecipeLocalDataSource>(),
+      sl<AiRecipeRemoteDataSource>(),
+    ),
+  );
+
+  sl.registerLazySingleton<AiRecipeLocalDataSource>(
+    () => AiRecipeLocalDataSource(
+      sl<SharedPreferences>(),
+      sl<FlutterSecureStorage>(),
+    ),
+  );
+
+  sl.registerLazySingleton<AiRecipeRemoteDataSource>(
+    () => AiRecipeRemoteDataSource(sl<Dio>()),
   );
 
   // Data sources
@@ -96,10 +140,7 @@ Future<void> init() async {
     () => RecipeLocalDataSource(sharedPreferences: sl()),
   );
   sl.registerLazySingleton<IAuthRemoteDataSource>(
-    () => AuthRemoteDataSource(
-      firebaseAuth: sl(),
-      firestore: sl(),
-    ),
+    () => AuthRemoteDataSource(firebaseAuth: sl(), firestore: sl()),
   );
   sl.registerLazySingleton<IAuthLocalDataSource>(
     () => AuthLocalDataSource(sharedPreferences: sl()),
@@ -108,6 +149,7 @@ Future<void> init() async {
   // External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);

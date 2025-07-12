@@ -65,9 +65,13 @@ class RecipeRepositoryImpl implements IRecipeRepository {
   Future<Either<Failure, void>> toggleFavorite(String id) async {
     try {
       await localDataSource.toggleFavorite(id);
+      // تحديث الواجهة مباشرة بعد تغيير حالة المفضلة
+      final recipes = await localDataSource.getCachedRecipes();
+      final updatedRecipe = recipes.firstWhere((recipe) => recipe.id == id);
+      await localDataSource.saveRecipe(updatedRecipe);
       return const Right(null);
     } on CacheException {
-      return Left(CacheFailure('فشل في الوصول إلى التخزين المحلي'));
+      return Left(CacheFailure('فشل في تحديث حالة المفضلة'));
     }
   }
 
@@ -77,17 +81,29 @@ class RecipeRepositoryImpl implements IRecipeRepository {
       final recipes = await localDataSource.getFavoriteRecipes();
       return Right(recipes);
     } on CacheException {
-      return Left(CacheFailure('فشل في الوصول إلى التخزين المحلي'));
+      return Left(CacheFailure('فشل في جلب الوصفات المفضلة'));
     }
   }
 
   @override
   Future<Either<Failure, void>> toggleLike(String id) async {
     try {
-      await remoteDataSource.toggleLike(id);
+      // تحديث حالة الإعجاب محلياً
+      final recipes = await localDataSource.getCachedRecipes();
+      final recipeIndex = recipes.indexWhere((recipe) => recipe.id == id);
+      if (recipeIndex != -1) {
+        final recipe = recipes[recipeIndex];
+        final updatedRecipe = recipe.copyWith(
+          likes: recipe.likes > 0 ? recipe.likes - 1 : recipe.likes + 1,
+          // الحفاظ على حالة المفضلة
+          isFavorite: recipe.isFavorite,
+        );
+        recipes[recipeIndex] = updatedRecipe;
+        await localDataSource.cacheRecipes(recipes);
+      }
       return const Right(null);
-    } on ServerException {
-      return Left(ServerFailure('فشل في الوصول إلى السيرفر'));
+    } on CacheException {
+      return Left(CacheFailure('فشل في تحديث حالة الإعجاب'));
     }
   }
 
@@ -97,7 +113,7 @@ class RecipeRepositoryImpl implements IRecipeRepository {
       await localDataSource.saveRecipe(recipe as RecipeModel);
       return const Right(null);
     } on CacheException {
-      return Left(CacheFailure('فشل في الوصول إلى التخزين المحلي'));
+      return Left(CacheFailure('فشل في حفظ الوصفة'));
     }
   }
 
@@ -107,7 +123,7 @@ class RecipeRepositoryImpl implements IRecipeRepository {
       await localDataSource.deleteRecipe(id);
       return const Right(null);
     } on CacheException {
-      return Left(CacheFailure('فشل في الوصول إلى التخزين المحلي'));
+      return Left(CacheFailure('فشل في حذف الوصفة'));
     }
   }
 }
