@@ -1,9 +1,4 @@
-![WhatsApp Image 2025-07-13 at 21 09 15_157e77d0](https://github.com/user-attachments/assets/67cc4ef6-5f13-4871-87f5-e4a8549524d1)# Cook It Yourself
 
-![Uploading WhatsApp Image 2025-07-1![WhatsApp Image 2025-07-13 at 21 09 15_988c7bf0](https://github.com/user-attachments/assets/1cf288c2-82a3-4199-b80f-d8915c1ef25c)
-![WhatsApp Image 2025-07-13 at 21 09 15_5eaf38ad](https://github.com/user-attachments/assets/701a0ba6-d7e9-44f0-8341-d0722e433ef0)
-![WhatsApp Image 2025-07-13 at 21 09 16_d3006006](https://github.com/user-attachments/assets/60631670-3550-4f78-92d2-2a5695772481)
-3 at 21.09.15_157e77d0.jpg…]()
 
 تطبيق وصفات طبخ يساعدك على اكتشاف وصفات جديدة وتعلم كيفية تحضيرها بنفسك.
 
@@ -85,3 +80,11 @@
     ```bash
     flutter run
     ```
+## Screenshots
+![WhatsApp Image 2025-07-13 at 21 09 15_157e77d0](https://github.com/user-attachments/assets/67cc4ef6-5f13-4871-87f5-e4a8549524d1)
+![Uploading WhatsApp Image 2025-07-1![WhatsApp Image 2025-07-13 at 21 09 15_988c7bf0](https://github.com/user-attachments/assets/1cf288c2-82a3-4199-b80f-d8915c1ef25c)
+![WhatsApp Image 2025-07-13 at 21 09 15_5eaf38ad](https://github.com/user-attachments/assets/701a0ba6-d7e9-44f0-8341-d0722e433ef0)
+![WhatsApp Image 2025-07-13 at 21 09 16_d3006006](https://github.com/user-attachments/assets/60631670-3550-4f78-92d2-2a5695772481)
+3 at 21.09.15_157e77d0.jpg…]()
+
+## s
